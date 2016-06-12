@@ -1,0 +1,9 @@
+
+/.idea/
+/node_modules/
+
+/db
+!/db/index.js
+
+/.env
+/npm-debug.log

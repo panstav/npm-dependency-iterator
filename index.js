@@ -1,9 +1,17 @@
 const express = require('express');
 
+const cache = require('./dependencies-cache');
 const getDepsOfPackage = require('./get-deps-of-package');
 
 const server = express();
 const port = 3000;
+
+server.get('/cache', (req, res) => {
+
+	cache.list()
+		.then(data => data ? res.json(data) : res.send('Cache is empty.'));
+
+});
 
 server.get('/deps/:name', (req, res) => {
 

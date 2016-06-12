@@ -1,13 +1,13 @@
 const got = require('got');
 
-const cache = {};
+const cache = require('./dependencies-cache');
 
 module.exports = getDepsOfPackage;
 
 function getDepsOfPackage(packageName, version){
 	version = version || 'latest';
 
-	return getDepsFromCache(packageName, version)
+	return cache.get(packageName, version)
 		.then(data => {
 
 			// if cache has the data, use it
@@ -15,24 +15,10 @@ function getDepsOfPackage(packageName, version){
 
 			// if no data was found on cache, fetch it from registry, and save it
 			return getDepsFromNpm(packageName, version)
-				.then(data => saveDepsToCache(packageName, version, data));
+				.then(data => cache.set(packageName, version, data));
 
 		});
 
-}
-
-function getDepsFromCache(packageName, version){
-	const key = cacheKey(packageName, version);
-
-	if (cache.hasOwnProperty(key)) return Promise.resolve(cache[key]);
-
-	return Promise.resolve(null);
-}
-
-function saveDepsToCache(packageName, version, data){
-	cache[cacheKey(packageName, version)] = data;
-	
-	return data;
 }
 
 function getDepsFromNpm(packageName, version){
@@ -48,8 +34,4 @@ function getDepsFromNpm(packageName, version){
 
 		});
 
-}
-
-function cacheKey(packageName, version){
-	return `${packageName}@${version}`;
 }

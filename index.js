@@ -14,25 +14,30 @@ server.get('/cache', (req, res) => {
 
 });
 
-server.get('/deps/:name', (req, res) => {
+server.get('/deps/:name', (req, res, next) => {
+	res.locals.packageName = req.params.name;
 
-	const packageName = req.params.name;
-
-	getDepsOfPackage(packageName)
-		.then(result => result.length ? res.json(result) : res.send(`Package "${packageName}" has no dependencies.`))
-		.catch(err => { console.error(err); res.status(500).end(); });
+	getDepsOfPackage(res.locals.packageName)
+		.then(result => result.length ? res.json(result) : res.send(`Package "${res.locals.packageName}" has no dependencies.`))
+		.catch(next);
 
 });
 
-server.get('/tree/:name', (req, res) => {
+server.get('/tree/:name', (req, res, next) => {
+	res.locals.packageName = req.params.name;
 
-	const packageName = req.params.name;
-
-	getDepsOfPackage(packageName)
+	getDepsOfPackage(res.locals.packageName)
 		.then(depIterator)
-		.then(result => result.length ? res.json(result) : res.send(`Package "${packageName}" has no dependencies.`))
-		.catch(err => { console.error(err); res.status(500).end(); });
+		.then(result => result.length ? res.json(result) : res.send(`Package "${res.locals.packageName}" has no dependencies.`))
+		.catch(next);
 
+});
+
+server.use((err, req, res, next) => {
+	if ('statusCode' in err && err.statusCode === 404) return res.send(`Package "${res.locals.packageName}" was not found.`);
+
+	console.error(err);
+	res.status(500).end();
 });
 
 server.listen(port, err => {

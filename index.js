@@ -1,6 +1,7 @@
 const express = require('express');
 
 const cache = require('./dependencies-cache');
+const depIterator = require('./dependency-tree-iterator');
 const getDepsOfPackage = require('./get-deps-of-package');
 
 const server = express();
@@ -18,6 +19,17 @@ server.get('/deps/:name', (req, res) => {
 	const packageName = req.params.name;
 
 	getDepsOfPackage(packageName)
+		.then(result => result.length ? res.json(result) : res.send(`Package "${packageName}" has no dependencies.`))
+		.catch(err => { console.error(err); res.status(500).end(); });
+
+});
+
+server.get('/tree/:name', (req, res) => {
+
+	const packageName = req.params.name;
+
+	getDepsOfPackage(packageName)
+		.then(depIterator)
 		.then(result => result.length ? res.json(result) : res.send(`Package "${packageName}" has no dependencies.`))
 		.catch(err => { console.error(err); res.status(500).end(); });
 

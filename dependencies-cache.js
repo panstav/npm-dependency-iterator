@@ -1,19 +1,24 @@
-const cache = {};
+const nodeCache = require('node-cache');
+const cache = new nodeCache();
 
 module.exports = {
 
-	list: () => Promise.resolve(Object.keys(cache).length ? cache : null),
+	list: () => {
+		const allKeys = cache.keys();
+
+		return Promise.resolve(allKeys.length ? cache.mget(allKeys) : null);
+	},
 
 	get: (packageName, version) => {
 		const key = cacheKey(packageName, version);
 
-		if (cache.hasOwnProperty(key)) return Promise.resolve(cache[key]);
-
-		return Promise.resolve(null);
+		return Promise.resolve(cache.get(key));
 	},
 
 	set: (packageName, version, data) => {
-		cache[cacheKey(packageName, version)] = data;
+		const key = cacheKey(packageName, version);
+
+		cache.set(key, data);
 
 		return Promise.resolve(data);
 	}

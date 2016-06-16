@@ -6,33 +6,57 @@ const log = require('../log');
 module.exports = getDeps;
 
 function getDeps(packageName, version){
-	version = version || 'latest';
 
-	return db.get(packageName, version).then(data => {
+	return resolveVersion(packageName, version)
 
-		// if cache has the data, use it
-		if (data) return data;
+		.then(resolvedVersion => {
+			version = resolvedVersion;
+			return db.get(packageName, resolvedVersion);
+		})
 
-		log.debug(`GetDeps: No cache of ${packageName}@${version}, querying npm.`);
+		.then(data => {
 
-		// if no data was found on cache, fetch it from registry, and save it
-		return queryNpm(packageName, version)
-			.then(data => db.set(packageName, version, data));
+			// if cache has the data, use it
+			if (data) return data;
+
+			log.debug(`GetDeps: No cache of ${packageName}@${version}, querying npm.`);
+
+			// if no data was found on cache, fetch it from registry, and save it
+			return queryNpmForDeps(packageName, version)
+				.then(npmData => db.set(packageName, version, npmData));
+
+		});
+
+}
+
+function queryNpmForDeps(packageName, version){
+
+	return got(`https://registry.npmjs.org/${packageName}/${version}?json=true`, { json: true }).then(resp => {
+
+		const dependencies = resp.body.dependencies;
+
+		if (!dependencies) return [];
+
+		// otherwise parse dependencies object into an array and return it
+		return Object.keys(dependencies).map(key => { return { name: key, version: dependencies[key] } });
 
 	});
 
 }
 
-function queryNpm(packageName, version){
+function resolveVersion(packageName, version){
 
-	return got(`https://registry.npmjs.org/${packageName}/${version}?json=true`, { json: true }).then(resp => {
+	log.debug(`GetDeps: Resolving version of ${packageName}@${version}`);
 
-		// if package has no dependencies - return an empty array
-		if (!resp.body.dependencies) return [];
+	if (version && isStrictSemver(version)) return Promise.resolve(version);
 
-		// otherwise parse dependencies object into an array and return it
-		return Object.keys(resp.body.dependencies).map(key => { return { name: key, version: resp.body.dependencies[key] } });
+	log.debug(`GetDeps: Querying npm to resolve exact version of ${packageName}`);
 
-	});
+	// if no version was given, query npm for latest
+	return got(`https://registry.npmjs.org/${packageName}/${version || 'latest'}?json=true`, { json: true }).then(resp => resp.body.version);
 
+}
+
+function isStrictSemver(version){
+	return /^[0-9]+\.[0-9]+\.[0-9]+$/.test(version);
 }

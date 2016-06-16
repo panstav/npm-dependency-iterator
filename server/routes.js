@@ -48,7 +48,7 @@ function exceptions(err, req, res, next){
 	if ('noDependencies' in err) return res.send(`Package "${res.locals.packageName}" has no dependencies.`);
 
 	if ('statusCode' in err && err.statusCode === 404){
-		return res.send(`Package "${res.locals.packageName}" was not found.`);
+		return res.status(404).send(`Package "${res.locals.packageName}" was not found.`);
 	}
 
 	log.error(err);

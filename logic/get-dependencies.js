@@ -5,6 +5,12 @@ const log = require('../log');
 
 module.exports = getDeps;
 
+module.exports._ = {
+	queryNpmForDeps,
+	resolveVersion,
+	isStrictSemver
+};
+
 function getDeps(packageName, version){
 
 	return resolveVersion(packageName, version)

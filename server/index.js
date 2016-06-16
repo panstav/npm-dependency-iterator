@@ -11,7 +11,6 @@ function initServer(){
 	// prettify response json
 	server.set('json spaces', 4);
 
-	server.get('/cache', routes.cache);
 	server.get('/deps/:name', routes.deps);
 	server.get('/tree/:name', routes.tree);
 

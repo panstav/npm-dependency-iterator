@@ -4,7 +4,7 @@ const log = require('../log');
 const iterateTree = require('../logic/iteratre-tree');
 const getDeps = require('../logic/get-dependencies');
 
-module.exports = { tree, deps, cache, exceptions };
+module.exports = { tree, deps, exceptions };
 
 function tree(req, res, next){
 
@@ -37,22 +37,6 @@ function deps(req, res, next){
 
 	function respond(result){
 		if (!result.length) return next({ noDependencies: true });
-
-		res.json(result);
-	}
-
-}
-
-function cache(req, res, next){
-
-	log.debug(`Routes: Retrieving cache`);
-
-	db.list()
-		.then(respond)
-		.catch(next);
-
-	function respond(result){
-		if (!result) return res.send('Cache is empty.');
 
 		res.json(result);
 	}

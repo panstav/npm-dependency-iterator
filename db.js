@@ -1,6 +1,8 @@
 const nodeCache = require('node-cache');
 const cache = new nodeCache();
 
+const log = require('./log');
+
 module.exports = {
 
 	list: () => {
@@ -12,11 +14,15 @@ module.exports = {
 	get: (packageName, version) => {
 		const key = cacheKey(packageName, version);
 
+		log.debug(`DB: Retrieving '${key}'`);
+
 		return Promise.resolve(cache.get(key));
 	},
 
 	set: (packageName, version, data) => {
 		const key = cacheKey(packageName, version);
+
+		log.debug(`DB: Saving '${key}'`);
 
 		cache.set(key, data);
 

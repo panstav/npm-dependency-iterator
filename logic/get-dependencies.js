@@ -1,6 +1,7 @@
 const got = require('got');
 
 const db = require('../db');
+const log = require('../log');
 
 module.exports = getDeps;
 
@@ -11,6 +12,8 @@ function getDeps(packageName, version){
 
 		// if cache has the data, use it
 		if (data) return data;
+
+		log.debug(`GetDeps: No cache of ${packageName}@${version}, querying npm.`);
 
 		// if no data was found on cache, fetch it from registry, and save it
 		return queryNpm(packageName, version)

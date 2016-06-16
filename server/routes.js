@@ -1,4 +1,5 @@
 const db = require('../db');
+const log = require('../log');
 
 const iterateTree = require('../logic/iteratre-tree');
 const getDeps = require('../logic/get-dependencies');
@@ -8,6 +9,8 @@ module.exports = { tree, deps, cache, exceptions };
 function tree(req, res, next){
 
 	res.locals.packageName = req.params.name;
+
+	log.debug(`Routes: Retrieving tree of ${res.locals.packageName}`);
 
 	getDeps(res.locals.packageName)
 		.then(iterateTree)
@@ -26,6 +29,8 @@ function deps(req, res, next){
 
 	res.locals.packageName = req.params.name;
 
+	log.debug(`Routes: Retrieving dependencies of ${res.locals.packageName}`);
+
 	getDeps(res.locals.packageName)
 		.then(respond)
 		.catch(next);
@@ -39,6 +44,8 @@ function deps(req, res, next){
 }
 
 function cache(req, res, next){
+
+	log.debug(`Routes: Retrieving cache`);
 
 	db.list()
 		.then(respond)
@@ -60,6 +67,6 @@ function exceptions(err, req, res, next){
 		return res.send(`Package "${res.locals.packageName}" was not found.`);
 	}
 
-	console.error(err);
+	log.error(err);
 	res.status(500).end();
 }

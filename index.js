@@ -1,6 +1,8 @@
 const initServer = require('./server');
+const log = require('./log');
+
 const port = process.env.PORT || 3000;
 
 initServer().listen(port, () => {
-	console.info(`Listening on port ${port}`);
+	log.info(`Listening on port ${port}`);
 });

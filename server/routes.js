@@ -1,10 +1,11 @@
 const db = require('../db');
 const log = require('../log');
+const track = require('../track');
 
 const iterateTree = require('../logic/iteratre-tree');
 const getDeps = require('../logic/get-dependencies');
 
-module.exports = { tree, deps, exceptions, fourofour };
+module.exports = { tree, deps, exception, fourofour };
 
 function tree(req, res, next){
 
@@ -21,6 +22,8 @@ function tree(req, res, next){
 		if (!result.length) return next({ noDependencies: true });
 
 		res.json(result);
+
+		track('route', { name: 'tree', url: req.url, package: res.locals.packageName });
 	}
 
 }
@@ -39,11 +42,13 @@ function deps(req, res, next){
 		if (!result.length) return next({ noDependencies: true });
 
 		res.json(result);
+
+		track('route', { name: 'deps', url: req.url, package: res.locals.packageName });
 	}
 
 }
 
-function exceptions(err, req, res, next){
+function exception(err, req, res, next){
 
 	if ('noDependencies' in err){
 		return res.send(`Package "${res.locals.packageName}" has no dependencies.`);

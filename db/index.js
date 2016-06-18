@@ -7,7 +7,7 @@ module.exports = {
 	get: (packageName, version) => {
 		return new Promise((resolve, reject) => {
 
-			const key = cacheKey(packageName, version);
+			const key = pkgKey(packageName, version);
 
 			log.debug(`DB: Retrieving '${key}'`);
 
@@ -27,13 +27,14 @@ module.exports = {
 	set: (packageName, version, data) => {
 		return new Promise((resolve, reject) => {
 
-			const key = cacheKey(packageName, version);
+			const key = pkgKey(packageName, version);
 
 			log.debug(`DB: Saving '${key}'`);
 
 			db.put(key, data, err => {
 				if (err) return reject(err);
 
+				// resolve saved data for .then chain
 				resolve(data);
 			});
 
@@ -42,6 +43,6 @@ module.exports = {
 	
 };
 
-function cacheKey(packageName, version){
+function pkgKey(packageName, version){
 	return `${packageName}@${version}`;
 }

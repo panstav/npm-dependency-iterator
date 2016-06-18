@@ -4,7 +4,7 @@ const log = require('../log');
 const iterateTree = require('../logic/iteratre-tree');
 const getDeps = require('../logic/get-dependencies');
 
-module.exports = { tree, deps, exceptions };
+module.exports = { tree, deps, exceptions, fourofour };
 
 function tree(req, res, next){
 
@@ -45,12 +45,23 @@ function deps(req, res, next){
 
 function exceptions(err, req, res, next){
 
-	if ('noDependencies' in err) return res.send(`Package "${res.locals.packageName}" has no dependencies.`);
+	if ('noDependencies' in err){
+		return res.send(`Package "${res.locals.packageName}" has no dependencies.`);
+	}
 
 	if ('statusCode' in err && err.statusCode === 404){
 		return res.status(404).send(`Package "${res.locals.packageName}" was not found.`);
 	}
 
-	log.error(err);
-	res.status(500).end();
+	if (err){
+		log.error(err);
+		return res.status(500).end();
+	}
+
+	next();
+
+}
+
+function fourofour(req, res){
+	res.status(404).end();
 }

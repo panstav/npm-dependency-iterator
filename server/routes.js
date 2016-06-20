@@ -5,7 +5,7 @@ const track = require('../track');
 const iterateTree = require('../logic/iteratre-tree');
 const getDeps = require('../logic/get-dependencies');
 
-module.exports = { tree, deps, exception, fourofour };
+module.exports = { tree, exceptions, fourofour };
 
 function tree(req, res, next){
 
@@ -28,27 +28,7 @@ function tree(req, res, next){
 
 }
 
-function deps(req, res, next){
-
-	res.locals.packageName = req.params.name;
-
-	log.debug(`Routes: Retrieving dependencies of ${res.locals.packageName}`);
-
-	getDeps(res.locals.packageName)
-		.then(respond)
-		.catch(next);
-
-	function respond(result){
-		if (!result.length) return next({ noDependencies: true });
-
-		res.json(result);
-
-		track('route', { name: 'deps', url: req.url, package: res.locals.packageName });
-	}
-
-}
-
-function exception(err, req, res, next){
+function exceptions(err, req, res, next){
 
 	if ('noDependencies' in err){
 		return res.send(`Package "${res.locals.packageName}" has no dependencies.`);
@@ -68,5 +48,5 @@ function exception(err, req, res, next){
 }
 
 function fourofour(req, res){
-	res.status(404).end();
+	res.status(404).redirect('/');
 }

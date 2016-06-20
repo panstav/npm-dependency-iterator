@@ -13,36 +13,6 @@ describe('Server', () => {
 		server = initServer();
 	});
 
-	describe('/deps', () => {
-
-		it('Should return 404 for a non-existent package', () => {
-
-			return request(server)
-				.get('/deps/non-existent-package')
-				.expect(404);
-
-		});
-
-		it('Should return a indication for packages with on dependencies', () => {
-
-			return request(server)
-				.get('/deps/is-array')
-				.expect(200)
-				.then(noDependencies);
-
-		});
-
-		it('Should return valid json for an existing package', () => {
-
-			return request(server)
-				.get('/deps/supertest-as-promised')
-				.expect(200)
-				.then(res => utils.validFlatDependency(res.body));
-
-		});
-
-	});
-
 	describe('/tree', () => {
 
 		it('Should return 404 for a non-existent package', () => {
@@ -53,12 +23,12 @@ describe('Server', () => {
 
 		});
 
-		it('Should return a indication for packages with on dependencies', () => {
+		it('Should return a indication for packages with no dependencies', () => {
 
 			return request(server)
-				.get('/deps/is-array')
+				.get('/tree/is-array')
 				.expect(200)
-				.then(noDependencies);
+				.then(res => expect(res.text).to.contain('no dependencies'));
 
 		});
 
@@ -74,7 +44,3 @@ describe('Server', () => {
 	});
 
 });
-
-function noDependencies(res){
-	expect(res.text).to.contain('no dependencies');
-}

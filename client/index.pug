@@ -1,0 +1,40 @@
+section.hero
+	.content
+
+		h1 # npm Dependency Iterator
+
+section.usage
+	.content
+
+		h2 ## Usage:
+		p Choose a package and press enter↲ to reveal its dependencies.
+
+		div
+			|*&nbsp;
+			strong GET
+			|&nbsp;`/get-tree/${
+
+			span.package-name-container
+				span(data-switchery)
+					ul
+						li(data-switch-on-click='Got') Got
+						li(data-switch-on-click='pug') pug
+						li(data-switch-on-click='Snyk') Snyk
+						li(data-switch-on-click='Bluebird') Bluebird
+
+			|}` for a&nbsp;
+			span.emphasis *depth*
+			|&nbsp;tree.
+
+section.results
+	.content
+
+		h2 ## Results
+		div(data-dump='')
+
+div(data-overlay='')
+	.loader
+		svg.circular(viewbox='25 25 50 50')
+			circle.path(cx='50', cy='50', r='20', fill='none', stroke-width='2', stroke-miterlimit='10')
+
+

@@ -1,0 +1,23 @@
+@import switchery-animations
+
+[data-switch-on-click]
+	cursor: pointer
+
+[data-switchery]
+	position: relative
+	top: 3px
+	overflow: hidden
+	display: inline-block
+	vertical-align: middle
+	height: 1.5em
+	ul
+		margin: 0
+		padding: 0
+		width: 8em
+		text-align: center
+		list-style: none
+		-webkit-animation: 16s linear 0s normal none infinite switchery-change
+		animation: 16s linear 0s normal none infinite switchery-change
+	li
+		height: 2em
+		line-height: 1em

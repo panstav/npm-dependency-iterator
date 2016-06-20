@@ -1,0 +1,54 @@
+@import loader-animations
+
+[data-overlay]
+	opacity: 0
+	z-index: -1
+	position: fixed
+	top: 0
+	bottom: 0
+	left: 0
+	right: 0
+	width: 100%
+	height: 100%
+	background-color: rgba(255, 255, 255, 0.75)
+	transition: opacity 300ms, z-index 500ms
+
+[data-overlay="active"]
+	opacity: 1
+	z-index: 10
+
+[data-overlay]
+	.loader
+		position: absolute
+		top: 0
+		bottom: 0
+		right: 0
+		left: 0
+		margin: auto
+		width: 50%
+		max-width: 250px
+		&:before
+			content: ''
+			display: block
+			padding-top: 100%
+
+	.circular
+		-webkit-animation: loader-rotate 2s linear infinite
+		animation: loader-rotate 2s linear infinite
+		height: 100%
+		-webkit-transform-origin: center center
+		transform-origin: center center
+		width: 100%
+		position: absolute
+		top: 0
+		bottom: 0
+		left: 0
+		right: 0
+		margin: auto
+
+	.path
+		stroke-dasharray: 1, 200
+		stroke-dashoffset: 0
+		-webkit-animation: loader-dash 1.5s ease-in-out infinite, loader-color 6s ease-in-out infinite
+		animation: loader-dash 1.5s ease-in-out infinite, loader-color 6s ease-in-out infinite
+		stroke-linecap: round

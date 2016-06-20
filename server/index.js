@@ -11,10 +11,15 @@ function initServer(){
 	// prettify response json
 	server.set('json spaces', 4);
 
-	server.get('/deps/:name', routes.deps);
 	server.get('/tree/:name', routes.tree);
 
-	server.use(routes.exceptions, routes.fourofour);
+	server.get('/', (req, res) => res.sendFile('index.html', { root: 'public' }));
+
+	server.use(
+		express.static('public'),
+		routes.exceptions,
+		routes.fourofour
+	);
 
 	return server;
 }

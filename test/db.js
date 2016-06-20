@@ -1,6 +1,6 @@
 const expect = require('expect.js');
 
-const db = require('../db');
+const db = require('../db').dependencies;
 
 describe('DB', () => {
 

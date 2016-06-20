@@ -25,7 +25,9 @@
     "gulp-sequence": "0.4.5",
     "keen-js": "3.4.1",
     "leveldown": "1.4.6",
-    "levelup": "1.3.2"
+    "levelup": "1.3.2",
+    "lodash.clonedeep": "4.3.2",
+    "semver": "5.1.0"
   },
   "devDependencies": {
     "expect.js": "0.3.1",

@@ -1,7 +1,10 @@
 const got = require('got');
+const semver = require('semver');
+const clone = require('lodash.clonedeep');
 
 const db = require('../db');
 const log = require('../log');
+const scheduler = require('../scheduler');
 
 module.exports = getDeps;
 
@@ -21,7 +24,7 @@ function getDeps(packageName, version){
 	function checkCacheForDeps(resolvedVersion){
 		// update used version so to not deal with "{^,~}x.y.z" semvers
 		version = resolvedVersion;
-		return db.get(packageName, resolvedVersion);
+		return db.dependencies.get(packageName, resolvedVersion);
 	}
 
 	function useCachedOrQueryNpm(data){
@@ -31,9 +34,16 @@ function getDeps(packageName, version){
 
 		log.debug(`GetDeps: No cache of ${packageName}@${version}, querying npm.`);
 
-		// otherwise, fetch it from the npm registry, and save it before returning data
-		return queryNpmForDeps(packageName, version)
-			.then(npmData => db.set(packageName, version, npmData));
+		// otherwise, fetch it from the npm registry, schedule saving it for after current request
+		return queryNpmForDeps(packageName, version).then(npmData => {
+			scheduler.add(db.dependencies.set.bind(null, packageName, version, clone(npmData)));
+			return npmData;
+
+			// return db.dependencies.set(packageName, version, clone(npmData));
+			// this is another strategy which is better for huge packages
+			// when a certain version of a package can be a dependency of tens and hundreds of packages in it
+			// and it is worth the wait for a save after each package resolution
+		});
 	}
 
 }
@@ -57,14 +67,28 @@ function resolveVersion(packageName, version){
 
 	log.debug(`GetDeps: Resolving version of ${packageName}@${version}`);
 
-	// if a specific version was provided, use it only if it's strict
-	if (version && isStrictSemver(version)) return Promise.resolve(version);
+	// if no version was provided go on and query npm for latest
+	if (!version) return queryNpmForVersion();
 
-	log.debug(`GetDeps: Querying npm to resolve exact version of ${packageName}`);
+	// otherwise use it as-is if it's strict
+	if (isStrictSemver(version)) return Promise.resolve(version);
 
-	// otherwise, query npm for non-strict version or 'latest' if not versionString was provided at all
-	return got(`https://registry.npmjs.org/${packageName}/${version || 'latest'}?json=true`, { json: true })
-		.then(resp => resp.body.version);
+	// but if it's a non-strict version check if db has a version that satisfies it
+	return db.versions.get(packageName).then(savedVersions => {
+		if (!savedVersions || !savedVersions.length) return queryNpmForVersion();
+		const satisfactory = savedVersions.filter(savedVersion => semver.satisfies(savedVersion, version));
+
+		// saved version won't satisfy, query npm for exact version
+		return satisfactory.length ? satisfactory[0] : queryNpmForVersion();
+	});
+
+	function queryNpmForVersion(){
+		log.debug(`GetDeps: Querying npm to resolve exact version of ${packageName}`);
+
+		// otherwise, query npm for non-strict version or 'latest' if not versionString was provided at all
+		return got(`https://registry.npmjs.org/${packageName}/${version || 'latest'}?json=true`, { json: true })
+			.then(resp => resp.body.version);
+	}
 
 }
 

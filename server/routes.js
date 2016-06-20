@@ -1,6 +1,7 @@
 const db = require('../db');
 const log = require('../log');
 const track = require('../track');
+const scheduler = require('../scheduler');
 
 const iterateTree = require('../logic/iteratre-tree');
 const getDeps = require('../logic/get-dependencies');
@@ -22,6 +23,8 @@ function tree(req, res, next){
 		if (!result.length) return next({ noDependencies: true });
 
 		res.json(result);
+
+		scheduler.flush();
 
 		track('route', { name: 'tree', url: req.url, package: res.locals.packageName });
 	}

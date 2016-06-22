@@ -1,15 +1,8 @@
-const util = require('./util');
-
-var loaderElem;
-util.onReady(() => {
-	loaderElem = document.querySelector('[data-overlay]');
-});
-
 module.exports = {
 	show: () => setLoaderState('active'),
 	hide: () => setLoaderState('')
 };
 
-function setLoaderState(state){
-	loaderElem.setAttribute('data-overlay', state);
+function setLoaderState(newState){
+	document.querySelector('[data-overlay]').setAttribute('data-overlay', newState);
 }

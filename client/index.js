@@ -1,49 +1,58 @@
 const util = require('./js/util');
 const loader = require('./js/loader');
 
-util.onReady(registerSwitcheryClickHandler);
+util.onReady(() => {
+	registerSwitcheryClickHandler();
+});
 
 function registerSwitcheryClickHandler(){
-	util.forEachElem('[data-switch-on-click]', elem => { elem.addEventListener('click', event => {
-
-		// collect element, package clicked and type
-		const li = event.currentTarget;
-		const packageName = li.dataset.switchOnClick;
-
-		// swap switchery with an input
-
-		const containerElem = document.getElementsByClassName('package-name-container')[0];
-
-		const inputElem = document.createElement('input');
-		inputElem.setAttribute('type', 'text');
-		inputElem.setAttribute('value', packageName);
-		inputElem.addEventListener('keydown', event => { if (event.keyIdentifier === "Enter" || event.which === 13 || event.keyCode === 13){
-			dumpAjax(inputElem.value.toLowerCase());
-		}});
-
-		containerElem.innerHTML = '';
-		containerElem.appendChild(inputElem);
-	})});
+	util.forEachElem('[data-switch-on-click]', elem => elem.addEventListener('click', event => {
+		const inputElem = buildInputToReplaceSwitchery(event.target.dataset.switchOnClick);
+		swapSwitcheryWithInput(inputElem);
+	}));
 }
 
-function dumpAjax(packageName){
+function buildInputToReplaceSwitchery(packageName){
+	const inputElem = document.createElement('input');
+	inputElem.setAttribute('type', 'text');
+	inputElem.setAttribute('value', packageName);
+	inputElem.addEventListener('keydown', requestDependenciesOnEnter);
+
+	return inputElem;
+}
+
+function swapSwitcheryWithInput(inputElem){
+	const switcheryContainer = document.getElementsByClassName('package-name-container')[0];
+	switcheryContainer.innerHTML = '';
+	switcheryContainer.appendChild(inputElem);
+}
+
+function requestDependenciesOnEnter(event){
+	if (event.keyIdentifier === "Enter" || event.which === 13 || event.keyCode === 13){
+		getDependencies(this.value.toLowerCase());
+	}
+}
+
+function getDependencies(packageName){
 
 	loader.show();
 
-	util.ajax(`/tree/${packageName}`, appendTree, err => {
-		loader.hide();
-		console.error(err);
-	});
+	util.ajax(`/tree/${packageName}`, yea, nah);
 
-	function appendTree(err, data){
+	function yea(err, tree){
 		loader.hide();
-
 		if (err) return console.error(err);
-
-		const dumpElem = document.querySelector('[data-dump]');
-		dumpElem.innerHTML = `<pre>${data}</pre>`;
-
-		document.querySelector('section.results').style.display = 'block';
+		appendTree(tree);
 	}
 
+	function nah(err){
+		loader.hide();
+		console.error(err);
+	}
+
+}
+
+function appendTree(tree){
+	document.querySelector('[data-dump]').innerHTML = `<pre>${tree}</pre>`;
+	document.querySelector('section.results').style.display = 'block';
 }

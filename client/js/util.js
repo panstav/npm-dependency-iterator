@@ -9,7 +9,7 @@ function onReady(fn){
 
 	if (document.addEventListener) return document.addEventListener('DOMContentLoaded', fn);
 
-	document.attachEvent('onreadystatechange', function(){
+	document.attachEvent('onreadystatechange', () => {
 		if (document.readyState != 'loading') fn();
 	});
 }
@@ -31,6 +31,16 @@ function forEachElem(identifier, parent, fn){
 
 	// pass the elements one by one to the given fn
 	elements.forEach(fn);
+
+	function isString(str){
+		return typeof(str) === 'string';
+	}
+
+	function isArray(arr){
+		const toStr = toString || {}.toString;
+		return toStr.call(arr) === '[object Array]';
+	}
+
 }
 
 function ajax(url, data, callback, fallback){
@@ -47,7 +57,7 @@ function ajax(url, data, callback, fallback){
 
 	if (data) request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
 
-	request.onload = function(){
+	request.onload = () => {
 		if (request.status >= 200 && request.status < 400) return callback(null, request.responseText);
 
 		callback({ response: request.responseText, status: request.status });
@@ -56,13 +66,4 @@ function ajax(url, data, callback, fallback){
 	request.onerror = fallback || console.error.bind(console);
 
 	request.send(JSON.stringify(data));
-}
-
-function isString(str){
-	return typeof(str) === 'string';
-}
-
-function isArray(arr){
-	// this should work for ie9+
-	return {}.toString.call(arr) == '[object Array]';
 }

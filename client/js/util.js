@@ -36,6 +36,7 @@ function forEachElem(identifier, parent, fn){
 function ajax(url, data, callback, fallback){
 
 	if (typeof(data) === 'function'){
+		if (typeof(callback) === 'function') fallback = callback;
 		callback = data;
 		data = undefined;
 	}

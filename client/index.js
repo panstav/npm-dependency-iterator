@@ -30,7 +30,12 @@ function dumpAjax(packageName){
 
 	loader.show();
 
-	util.ajax(`/tree/${packageName}`, (err, data) => {
+	util.ajax(`/tree/${packageName}`, appendTree, err => {
+		loader.hide();
+		console.error(err);
+	});
+
+	function appendTree(err, data){
 		loader.hide();
 
 		if (err) return console.error(err);
@@ -39,5 +44,6 @@ function dumpAjax(packageName){
 		dumpElem.innerHTML = `<pre>${data}</pre>`;
 
 		document.querySelector('section.results').style.display = 'block';
-	});
+	}
+
 }

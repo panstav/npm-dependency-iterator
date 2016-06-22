@@ -13,11 +13,6 @@
 	background-color: rgba(255, 255, 255, 0.75)
 	transition: opacity 300ms, z-index 500ms
 
-[data-overlay="active"]
-	opacity: 1
-	z-index: 10
-
-[data-overlay]
 	.loader
 		position: absolute
 		top: 0
@@ -52,3 +47,7 @@
 		-webkit-animation: loader-dash 1.5s ease-in-out infinite, loader-color 6s ease-in-out infinite
 		animation: loader-dash 1.5s ease-in-out infinite, loader-color 6s ease-in-out infinite
 		stroke-linecap: round
+
+[data-overlay="active"]
+	opacity: 1
+	z-index: 10

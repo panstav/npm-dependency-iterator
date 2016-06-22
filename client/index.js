@@ -8,7 +8,7 @@ util.onReady(() => {
 function registerSwitcheryClickHandler(){
 	util.forEachElem('[data-switch-on-click]', elem => elem.addEventListener('click', event => {
 		const inputElem = buildInputToReplaceSwitchery(event.target.dataset.switchOnClick);
-		swapSwitcheryWithInput(inputElem);
+		swapAndFocus(inputElem);
 	}));
 }
 
@@ -21,10 +21,11 @@ function buildInputToReplaceSwitchery(packageName){
 	return inputElem;
 }
 
-function swapSwitcheryWithInput(inputElem){
+function swapAndFocus(inputElem){
 	const switcheryContainer = document.getElementsByClassName('package-name-container')[0];
 	switcheryContainer.innerHTML = '';
 	switcheryContainer.appendChild(inputElem);
+	inputElem.focus();
 }
 
 function requestDependenciesOnEnter(event){

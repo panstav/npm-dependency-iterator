@@ -1,40 +1,54 @@
-section.hero
-	.content
+doctype html
+html(lang="en")
+	head
 
-		h1 # npm Dependency Iterator
+		title npm Dependency Iterator
+		meta(name="description" content="npm Dependency Iterator")
 
-section.usage
-	.content
+		meta(name="viewport", content="width=device-width,initial-scale=1")
+		meta(charset="utf-8")
+		meta(name="robots" content="noindex, nofollow")
 
-		h2 ## Usage:
-		p Choose a package and press enter↲ to reveal its dependencies.
+		script(type="text/javascript" src="scripts.js")
+		link(rel="stylesheet" href="styles.css")
 
-		div
-			|*&nbsp;
-			strong GET
-			|&nbsp;`/tree/${
+	body
 
-			span.package-name-container
-				span(data-switchery)
-					ul
-						li(data-switch-on-click='Got') Got
-						li(data-switch-on-click='pug') pug
-						li(data-switch-on-click='Snyk') Snyk
-						li(data-switch-on-click='Bluebird') Bluebird
+		section.hero
+			.content
 
-			|}` for a&nbsp;
-			span.emphasis *depth*
-			|&nbsp;tree.
+				h1 # npm Dependency Iterator
 
-section.results
-	.content
+		section.usage
+			.content
 
-		h2 ## Results:
-		div(data-dump='')
+				h2 ## Usage:
+				p Choose a package and press enter↲ to reveal its dependencies.
 
-div(data-overlay='')
-	.loader
-		svg.circular(viewbox='25 25 50 50')
-			circle.path(cx='50', cy='50', r='20', fill='none', stroke-width='2', stroke-miterlimit='10')
+				div
+					|*&nbsp;
+					strong GET
+					|&nbsp;`/tree/${
 
+					span.package-name-container
+						span(data-switchery)
+							ul
+								li(data-switch-on-click='Got') Got
+								li(data-switch-on-click='pug') pug
+								li(data-switch-on-click='Snyk') Snyk
+								li(data-switch-on-click='Bluebird') Bluebird
 
+					|}` for a&nbsp;
+					span.emphasis *depth*
+					|&nbsp;tree.
+
+		section.results
+			.content
+
+				h2 ## Results:
+				div(data-dump='')
+
+		div(data-overlay='')
+			.loader
+				svg.circular(viewbox='25 25 50 50')
+					circle.path(cx='50', cy='50', r='20', fill='none', stroke-width='2', stroke-miterlimit='10')

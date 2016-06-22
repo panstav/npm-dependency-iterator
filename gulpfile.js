@@ -22,9 +22,8 @@ gulp.task('js', () => {
 
 gulp.task('pug', () => {
 
-	return gulp.src('client/shell.pug')
+	return gulp.src('client/index.pug')
 		.pipe(plugins.pug({ pretty: true }))
-		.pipe(plugins.rename({ basename: 'index' }))
 		.pipe(gulp.dest('public'));
 
 });

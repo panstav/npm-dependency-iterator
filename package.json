@@ -35,6 +35,7 @@
     "mocha": "2.5.3",
     "safe-delete": "1.0.11",
     "supertest": "1.2.0",
-    "supertest-as-promised": "3.1.0"
+    "supertest-as-promised": "3.1.0",
+    "test-port": "1.2.0"
   }
 }

@@ -1,6 +1,5 @@
 const db = require('../db');
 const log = require('../log');
-const track = require('../track');
 const scheduler = require('../scheduler');
 
 const iterateTree = require('../logic/iteratre-tree');
@@ -25,8 +24,6 @@ function tree(req, res, next){
 		res.json(result);
 
 		scheduler.flush();
-
-		track('route', { name: 'tree', url: req.url, package: res.locals.packageName });
 	}
 
 }

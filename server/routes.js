@@ -5,7 +5,7 @@ const scheduler = require('../scheduler');
 const iterateTree = require('../logic/iteratre-tree');
 const getDeps = require('../logic/get-dependencies');
 
-module.exports = { tree, exceptions, fourofour };
+module.exports = { tree, cleanDB, exceptions, fourofour };
 
 function tree(req, res, next){
 
@@ -25,6 +25,14 @@ function tree(req, res, next){
 
 		scheduler.flush();
 	}
+
+}
+
+function cleanDB(req, res, next){
+
+	db.clean()
+		.then(() => res.status(200).redirect('/'))
+		.catch(next);
 
 }
 

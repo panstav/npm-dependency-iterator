@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "node_modules/.bin/mocha",
-    "clean-db": "node_modules/.bin/safe-delete db/dependencies db/versions"
+    "test": "node_modules/.bin/mocha"
   },
   "keywords": [],
   "author": "",

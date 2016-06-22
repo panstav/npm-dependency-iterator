@@ -1,7 +1,13 @@
 const level = require('levelup');
+const database = require('leveldown');
 
-const dependenciesDB = level(`${__dirname}/dependencies`, { valueEncoding: 'json' });
-const versionsDB = level(`${__dirname}/versions`, { valueEncoding: 'json' });
+const dirs = {
+	dependencies: `${__dirname}/dependencies`,
+	versions: `${__dirname}/versions`
+};
+
+const dependenciesDB = level(dirs.dependencies, { valueEncoding: 'json' });
+const versionsDB = level(dirs.versions, { valueEncoding: 'json' });
 
 const log = require('../log');
 
@@ -15,7 +21,9 @@ module.exports = {
 	versions: {
 		get: getVersions,
 		add: addVersion
-	}
+	},
+
+	clean: cleanDatabases
 
 };
 
@@ -28,7 +36,9 @@ function getDependencies(packageName, version){
 
 		dependenciesDB.get(key, (err, data) => {
 			if (err){
-				if ('notFound' in err) return resolve();
+				if ('notFound' in err){
+					return resolve();
+				}
 
 				return reject(err);
 			}
@@ -46,14 +56,18 @@ function setDependencies(packageName, version, data){
 		function saveOrSkip(savedData){
 
 			// if data is already there, skip
-			if (savedData) return resolve(savedData);
+			if (savedData){
+				return resolve(savedData);
+			}
 
 			const key = pkgKey(packageName, version);
 
 			log.debug(`DB: Saving dependencies of '${key}'`);
 
 			dependenciesDB.put(key, data, err => {
-				if (err) return reject(err);
+				if (err){
+					return reject(err);
+				}
 
 				// resolve after indexing the version, with saved data for .then chain
 				addVersion(packageName, version)
@@ -76,7 +90,9 @@ function getVersions(packageName){
 
 		versionsDB.get(packageName, (err, data) => {
 			if (err){
-				if ('notFound' in err) return resolve();
+				if ('notFound' in err){
+					return resolve();
+				}
 
 				return reject(err);
 			}
@@ -94,19 +110,60 @@ function addVersion(packageName, version){
 		versionsDB.get(packageName, (err, data) => {
 			if (err){
 				// reject on error, unless it's notFound
-				if (!'notFound' in err) return reject(err);
+				if (!'notFound' in err){
+					return reject(err);
+				}
 			}
 
 			data = data || [];
-			if (data.indexOf(version) > -1) return resolve(data);
+			if (data.indexOf(version) > -1){
+				return resolve(data);
+			}
 
 			data.push(version);
 
 			versionsDB.put(packageName, data, err => {
-				if (err) return reject(err);
+				if (err){
+					return reject(err);
+				}
 
 				resolve(data);
 			});
 		});
 	});
+}
+
+function cleanDatabases(){
+	return new Promise((resolve, reject) => {
+
+		return closeDatabases().then(destroyDatabases).then(reopenDatabases);
+
+		function closeDatabases(){
+			return new Promise(resolve => {
+				dependenciesDB.close(() => versionsDB.close(() => resolve() ));
+			});
+		}
+
+		function destroyDatabases(){
+
+			database.destroy(dirs.dependencies, err =>{
+				if (err) return reject(err);
+
+				database.destroy(dirs.versions, err => {
+					if (err) return reject(err);
+
+					resolve();
+				});
+			});
+
+		}
+
+		function reopenDatabases(){
+			return new Promise(resolve => {
+				dependenciesDB.open(() => versionsDB.open(() => resolve() ));
+			});
+		}
+
+	});
+
 }

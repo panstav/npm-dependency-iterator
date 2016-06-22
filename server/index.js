@@ -12,6 +12,7 @@ function initServer(){
 	server.set('json spaces', 4);
 
 	server.get('/tree/:name', routes.tree);
+	server.get('/clean-db', routes.cleanDB);
 
 	server.get('/', (req, res) => res.sendFile('index.html', { root: 'public' }));
 

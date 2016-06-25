@@ -1,3 +1,5 @@
+# npm Dependency Iterator [![Build Status](https://travis-ci.org/panstav/npm-dependency-iterator.svg?branch=master)](https://travis-ci.org/panstav/npm-dependency-iterator)
+
 ## Installation
 
 * Traverse to where you're comfortable and clone this repo

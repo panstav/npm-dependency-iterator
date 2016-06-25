@@ -12,6 +12,14 @@
     "test": "node_modules/.bin/mocha",
     "heroku-postbuild": "node_modules/.bin/gulp build"
   },
+  "config": {
+    "pre-git": {
+      "pre-push": [
+        "npm test",
+        "node_modules/.bin/snyk test"
+      ]
+    }
+  },
   "keywords": [],
   "author": {
     "name": "Stav Geffen",
@@ -21,7 +29,7 @@
   "license": "ISC",
   "dependencies": {
     "babel-preset-es2015": "6.9.0",
-    "express": "4.13.4",
+    "express": "4.14.0",
     "got": "6.3.0",
     "gulp": "3.9.1",
     "gulp-babel": "6.1.2",
@@ -34,14 +42,17 @@
     "leveldown": "1.4.6",
     "levelup": "1.3.2",
     "lodash.clonedeep": "4.3.2",
-    "semver": "5.1.0"
+    "semver": "5.1.0",
+    "snyk": "1.16.0"
   },
   "devDependencies": {
     "expect.js": "0.3.1",
     "mocha": "2.5.3",
+    "pre-git": "3.10.0",
     "safe-delete": "1.0.11",
     "supertest": "1.2.0",
     "supertest-as-promised": "3.1.0",
     "test-port": "1.2.0"
-  }
+  },
+  "snyk": true
 }

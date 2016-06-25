@@ -23,10 +23,10 @@ describe('Server', () => {
 
 		});
 
-		it('Should return a indication for packages with no dependencies', () => {
+		it('Should return an indication for packages with no dependencies', () => {
 
 			return request(server)
-				.get('/tree/is-array')
+				.get('/tree/isarray')
 				.expect(200)
 				.then(res => expect(res.text).to.contain('no dependencies'));
 
@@ -37,7 +37,7 @@ describe('Server', () => {
 			return request(server)
 				.get('/tree/supertest-as-promised')
 				.expect(200)
-				.then(res => utils.validDeepDependency(res.body));
+				.then(res => utils.depTreeIsDeep(res.body));
 
 		});
 

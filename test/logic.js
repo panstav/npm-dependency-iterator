@@ -8,7 +8,7 @@ describe('getDeps', () => {
 
 	it('Should return an empty array for packages with no dependencies', () => {
 
-		return getDeps('is-array').then(deps => {
+		return getDeps('isarray').then(deps => {
 			expect(deps).to.be.an('array');
 			expect(deps).to.be.empty();
 		});
@@ -17,7 +17,7 @@ describe('getDeps', () => {
 
 	it('Should return a valid schema of dependencies', () => {
 
-		return getDeps('supertest-as-promised').then(deps => utils.validFlatDependency(deps));
+		return getDeps('supertest-as-promised').then(deps => utils.depTreeIsFlat(deps));
 
 	});
 
@@ -31,7 +31,7 @@ describe('getDeps', () => {
 				defaultDeps.forEach(defaultDep => {
 					const matchingDeps = latestDeps.filter(dep => dep.name === defaultDep.name);
 					expect(matchingDeps).to.have.length(1);
-					expect(matchingDeps[0].version).to.be.eql(defaultDep.version);
+					expect(matchingDeps[0].version).to.be.equal(defaultDep.version);
 				});
 
 			});
@@ -43,7 +43,7 @@ describe('getDeps', () => {
 
 		it('Should return an empty array for packages with no dependencies', () => {
 
-			return getDeps._.queryNpmForDeps('is-array', 'latest').then(deps => {
+			return getDeps._.queryNpmForDeps('isarray', '1.0.0').then(deps => {
 				expect(deps).to.be.an('array');
 				expect(deps).to.be.empty();
 			});
@@ -52,7 +52,7 @@ describe('getDeps', () => {
 
 		it('Should return a valid schema of dependencies', () => {
 
-			return getDeps._.queryNpmForDeps('supertest-as-promised', 'latest').then(deps => utils.validFlatDependency(deps));
+			return getDeps._.queryNpmForDeps('supertest-as-promised', 'latest').then(deps => utils.depTreeIsFlat(deps));
 
 		});
 

@@ -1,19 +1,19 @@
 const expect = require('expect.js');
 
 module.exports = {
-	validFlatDependency,
-	validDeepDependency
+	depTreeIsFlat,
+	depTreeIsDeep
 };
 
-function validFlatDependency(deps){
+function depTreeIsFlat(deps){
 	expect(deps).to.be.an('array');
 	deps.forEach(dep => {
 		expect(dep).to.be.an('object');
-		expect(dep).to.only.have.keys(['name', 'version'])
+		expect(dep).to.only.have.keys(['name', 'version']);
 	});
 }
 
-function validDeepDependency(deps){
+function depTreeIsDeep(deps){
 	expect(deps).to.be.an('array');
 	deps.forEach(dep => {
 		expect(dep).to.be.an('object');

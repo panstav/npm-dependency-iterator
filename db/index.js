@@ -36,11 +36,15 @@ function getDependencies(packageName, version){
 
 		dependenciesDB.get(key, (err, data) => {
 			if (err){
+
+				// this is expected, if no cache is present, continue with no data
 				if ('notFound' in err) return resolve();
 
+				// but reject on other kinds of error
 				return reject(err);
 			}
 
+			// great, data is present - continue with it
 			resolve(data);
 		});
 	});
@@ -49,11 +53,13 @@ function getDependencies(packageName, version){
 function setDependencies(packageName, version, data){
 	return new Promise((resolve, reject) => {
 
+		// first check if we saved this data before
 		getDependencies(packageName, version).then(saveOrSkip, reject);
 
 		function saveOrSkip(savedData){
 
 			// if data is already there, skip
+			// suppose data for the same package and version will never change
 			if (savedData) return resolve(savedData);
 
 			const key = pkgKey(packageName, version);
@@ -80,11 +86,15 @@ function getVersions(packageName){
 
 		versionsDB.get(packageName, (err, data) => {
 			if (err){
+
+				// this is expected, if no cache is present, continue with no data
 				if ('notFound' in err) return resolve();
 
+				// but reject on other kinds of error
 				return reject(err);
 			}
 
+			// great, data is present - continue with it
 			resolve(data);
 		});
 	});
@@ -97,14 +107,17 @@ function addVersion(packageName, version){
 
 		versionsDB.get(packageName, (err, data) => {
 
-			// reject on error, unless it's notFound
+			// reject on error of any kind except the 'notFound' kind
 			if (err && !'notFound' in err) return reject(err);
 
+			// save us from type bondage, data is either falsy or array
 			data = data || [];
+
+			// if data contains a the version we wish to cache - move on with the entire array
 			if (data.indexOf(version) > -1) return resolve(data);
 
+			// otherwise append this version to the array, save it, and continue
 			data.push(version);
-
 			versionsDB.put(packageName, data, err => {
 				if (err) return reject(err);
 
@@ -117,15 +130,20 @@ function addVersion(packageName, version){
 function cleanDatabases(){
 	return new Promise((resolve, reject) => {
 
+		// leveldb wants to be closed before it can be safely deleted
+		// reopen it after so that we can move on immediately
 		return closeDatabases().then(destroyDatabases).then(reopenDatabases);
 
 		function closeDatabases(){
 			return new Promise(resolve => {
+				// close both databases and continue
 				dependenciesDB.close(() => versionsDB.close(() => resolve() ));
 			});
 		}
 
 		function destroyDatabases(){
+
+			// delete the entire file tree of both databases, rejecting on any error
 
 			database.destroy(dirs.dependencies, err =>{
 				if (err) return reject(err);
@@ -150,5 +168,6 @@ function cleanDatabases(){
 }
 
 function pkgKey(packageName, version){
+	// generate a string to be used as a hashKey that's unique to every package
 	return `${packageName}@${version}`;
 }

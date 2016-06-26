@@ -5,6 +5,7 @@
 **To do:**
 * Thorough code review.
 * Optimize iteration of really big packages.
+* Adjust /tree route to accepts specific versions too.
 * Write more tests and integrate a coverage estimate.
 * Outsource logic, leave client-side interface here for show-off.
 

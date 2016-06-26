@@ -1,6 +1,8 @@
 const level = require('levelup');
 const database = require('leveldown');
 
+const log = require('../log');
+
 const dirs = {
 	dependencies: `${__dirname}/dependencies`,
 	versions: `${__dirname}/versions`
@@ -8,8 +10,6 @@ const dirs = {
 
 const dependenciesDB = level(dirs.dependencies, { valueEncoding: 'json' });
 const versionsDB = level(dirs.versions, { valueEncoding: 'json' });
-
-const log = require('../log');
 
 module.exports = {
 
@@ -36,9 +36,7 @@ function getDependencies(packageName, version){
 
 		dependenciesDB.get(key, (err, data) => {
 			if (err){
-				if ('notFound' in err){
-					return resolve();
-				}
+				if ('notFound' in err) return resolve();
 
 				return reject(err);
 			}
@@ -56,18 +54,14 @@ function setDependencies(packageName, version, data){
 		function saveOrSkip(savedData){
 
 			// if data is already there, skip
-			if (savedData){
-				return resolve(savedData);
-			}
+			if (savedData) return resolve(savedData);
 
 			const key = pkgKey(packageName, version);
 
 			log.debug(`DB: Saving dependencies of '${key}'`);
 
 			dependenciesDB.put(key, data, err => {
-				if (err){
-					return reject(err);
-				}
+				if (err) return reject(err);
 
 				// resolve after indexing the version, with saved data for .then chain
 				addVersion(packageName, version)
@@ -79,10 +73,6 @@ function setDependencies(packageName, version, data){
 	});
 }
 
-function pkgKey(packageName, version){
-	return `${packageName}@${version}`;
-}
-
 function getVersions(packageName){
 	return new Promise((resolve, reject) => {
 
@@ -90,9 +80,7 @@ function getVersions(packageName){
 
 		versionsDB.get(packageName, (err, data) => {
 			if (err){
-				if ('notFound' in err){
-					return resolve();
-				}
+				if ('notFound' in err) return resolve();
 
 				return reject(err);
 			}
@@ -108,24 +96,17 @@ function addVersion(packageName, version){
 		log.debug(`DB: Saving version of '${packageName}'`);
 
 		versionsDB.get(packageName, (err, data) => {
-			if (err){
-				// reject on error, unless it's notFound
-				if (!'notFound' in err){
-					return reject(err);
-				}
-			}
+
+			// reject on error, unless it's notFound
+			if (err && !'notFound' in err) return reject(err);
 
 			data = data || [];
-			if (data.indexOf(version) > -1){
-				return resolve(data);
-			}
+			if (data.indexOf(version) > -1) return resolve(data);
 
 			data.push(version);
 
 			versionsDB.put(packageName, data, err => {
-				if (err){
-					return reject(err);
-				}
+				if (err) return reject(err);
 
 				resolve(data);
 			});
@@ -166,4 +147,8 @@ function cleanDatabases(){
 
 	});
 
+}
+
+function pkgKey(packageName, version){
+	return `${packageName}@${version}`;
 }

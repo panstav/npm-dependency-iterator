@@ -4,7 +4,9 @@
 
 **To do:**
 * Thorough code review.
+* Whenever saving dependencies - resolve newly saved data **before** caching version number.
 * Optimize iteration of really big packages.
+* Don't naively suppose a specific package that was saved - has not changed on the registry.
 * Adjust /tree route to accepts specific versions too.
 * Write more tests and integrate a coverage estimate.
 * Outsource logic, leave client-side interface here for show-off.

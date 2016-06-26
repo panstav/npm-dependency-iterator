@@ -4,6 +4,7 @@
 
 **To do:**
 * Thorough code review.
+* Outsource client utils, update them with any missing functionality.
 * Whenever saving dependencies - resolve newly saved data **before** caching version number.
 * Optimize iteration of really big packages.
 * Don't naively suppose a specific package that was saved - has not changed on the registry.
